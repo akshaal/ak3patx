@@ -1,0 +1,7 @@
+src/jsclient/node_modules/
+src/jsclient/package-lock.json
+src/jsclient/.next
+src/jsclient/dist
+logs
+package-lock.json
+.#*

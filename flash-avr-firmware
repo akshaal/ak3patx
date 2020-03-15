@@ -1,0 +1,10 @@
+#!/bin/sh
+
+cd src/avr
+
+make || exit
+
+echo
+echo "Flashing..."
+
+avrdude -c usbasp -p m328p -B 9600 -U flash:w:firmware.hex:a

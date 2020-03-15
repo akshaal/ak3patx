@@ -1,0 +1,13 @@
+serial-protocol.txt.tmp
+.classpath
+.project
+.cproject
+*.s
+*.inline
+*.o
+*.out
+*.i
+*.res
+*.ii
+*.avr
+*.bin
