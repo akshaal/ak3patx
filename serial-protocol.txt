@@ -1,0 +1,13 @@
+A1: Misc: u32 uptime_deciseconds
+A2: Misc: u8 usart0_rx_overflow_count
+A3: Misc: u32 main_loop_iterations_in_last_decisecond
+B1: Onboard temperature: u8 ds18b20_onboard.get_crc_errors()
+B2: Onboard temperature: u8 ds18b20_onboard.get_disconnects()
+B3: Onboard temperature: u16 ds18b20_onboard.get_temperatureX16()
+B4: Onboard temperature: u8 ds18b20_onboard.get_update_id()
+B5: Onboard temperature: u8 ds18b20_onboard.get_updated_deciseconds_ago()
+C1: Controller temperature: u8 ds18b20_ext.get_crc_errors()
+C2: Controller temperature: u8 ds18b20_ext.get_disconnects()
+C3: Controller temperature: u16 ds18b20_ext.get_temperatureX16()
+C4: Controller temperature: u8 ds18b20_ext.get_update_id()
+C5: Controller temperature: u8 ds18b20_ext.get_updated_deciseconds_ago()
