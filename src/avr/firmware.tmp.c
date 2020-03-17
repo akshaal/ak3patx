@@ -4,6 +4,13 @@
 // USE_REG$(global variable name);
 // USE_REG$(global variable name, low);
 
+/* Using register r16 for usart0_writer__byte_to_send */;
+/* Using register r17 for usart0_writer__akat_coroutine_state */;
+/* Using register r18 for usart0_writer__u8_to_format_and_send */;
+/* Using register r3 for usart0_reader__read_command__dequeue_byte__akat_coroutine_state */;
+/* Using register r4 for usart0_writer__send_byte__akat_coroutine_state */;
+/* Using register r5 for ds18b20_thread__akat_coroutine_state */;
+
 // TUNE_FUNCTION$(function name, pure, no_inline);
 
 ///////////////////////////////////////////////////////////////////
@@ -3204,9 +3211,9 @@ static AKAT_FORCE_INLINE void performance_runnable() {
 static AKAT_FORCE_INLINE void akat_on_every_decisecond();
 
 // Can't use LOW register here!
-/* Using register r16 for akat_every_decisecond_run_required */;
+/* Using register r19 for akat_every_decisecond_run_required */;
 
-register u8 akat_every_decisecond_run_required asm ("r16");
+register u8 akat_every_decisecond_run_required asm ("r19");
 
 ;
 ;
@@ -3276,949 +3283,16 @@ static AKAT_FORCE_INLINE void uptime_ticker() {
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-// Led pins
+// Main logic
 
-typedef struct {
-    void (* const set)(u8 state);
-    u8 (* const is_set)();
-} blue_led__port_t;
+static u8 power_should_be_on = 0;
 
-extern blue_led__port_t const blue_led__port;
-
-static AKAT_FORCE_INLINE void blue_led__port__set__impl(u8 state) {
-#define set__impl blue_led__port__set__impl
-
-    if (state) {
-        PORTB |= 1 << 5;  //Set PORTB of B5 to 1
-    } else {
-        PORTB &= ~(1 << 5);  //Set PORTB of B5 to 0
-    }
-
-#undef set__impl
-}
-static AKAT_FORCE_INLINE u8 blue_led__port__is_set__impl() {
-#define is_set__impl blue_led__port__is_set__impl
-#define set__impl blue_led__port__set__impl
-    return PORTB & (1 << 5);  //Get value of PORTB for B5
-#undef is_set__impl
-#undef set__impl
-}
-#define is_set__impl blue_led__port__is_set__impl
-#define set__impl blue_led__port__set__impl
-
-blue_led__port_t const blue_led__port = {.set = &set__impl
-                                         ,
-                                         .is_set = &is_set__impl
-                                        };
-
-
-#undef is_set__impl
-#undef set__impl
-#define is_set__impl blue_led__port__is_set__impl
-#define set__impl blue_led__port__set__impl
-
-
+//Main state that dictates whether power should be on now or off as requested by operator.
+;
+;
 ;
 
-#define is_set__impl blue_led__port__is_set__impl
-#define set__impl blue_led__port__set__impl
-
-
-
-
-
-#undef is_set__impl
-#undef set__impl
-;
-
-
-
-typedef struct {
-    void (* const set)(u8 state);
-    u8 (* const is_set)();
-} blue_led__ddr_t;
-
-extern blue_led__ddr_t const blue_led__ddr;
-
-static AKAT_FORCE_INLINE void blue_led__ddr__set__impl(u8 state) {
-#define set__impl blue_led__ddr__set__impl
-
-    if (state) {
-        DDRB |= 1 << 5;  //Set DDRB of B5 to 1
-    } else {
-        DDRB &= ~(1 << 5);  //Set DDRB of B5 to 0
-    }
-
-#undef set__impl
-}
-static AKAT_FORCE_INLINE u8 blue_led__ddr__is_set__impl() {
-#define is_set__impl blue_led__ddr__is_set__impl
-#define set__impl blue_led__ddr__set__impl
-    return DDRB & (1 << 5);  //Get value of DDRB for B5
-#undef is_set__impl
-#undef set__impl
-}
-#define is_set__impl blue_led__ddr__is_set__impl
-#define set__impl blue_led__ddr__set__impl
-
-blue_led__ddr_t const blue_led__ddr = {.set = &set__impl
-                                       ,
-                                       .is_set = &is_set__impl
-                                      };
-
-
-#undef is_set__impl
-#undef set__impl
-#define is_set__impl blue_led__ddr__is_set__impl
-#define set__impl blue_led__ddr__set__impl
-
-
-;
-
-#define is_set__impl blue_led__ddr__is_set__impl
-#define set__impl blue_led__ddr__set__impl
-
-
-
-
-
-#undef is_set__impl
-#undef set__impl
-;
-
-
-
-static AKAT_FORCE_INLINE void blue_led__init() {
-    blue_led__ddr.set(1); //Init B5 as output
-}
-
-;
-
-
-
-
-
-typedef struct {
-    void (* const set)(u8 state);
-    u8 (* const is_set)();
-} blue_led_t;
-
-extern blue_led_t const blue_led;
-
-static AKAT_FORCE_INLINE void blue_led__set__impl(u8 state) {
-#define set__impl blue_led__set__impl
-    blue_led__port.set(state);
-#undef set__impl
-}
-static AKAT_FORCE_INLINE u8 blue_led__is_set__impl() {
-#define is_set__impl blue_led__is_set__impl
-#define set__impl blue_led__set__impl
-    return blue_led__port.is_set();
-#undef is_set__impl
-#undef set__impl
-}
-#define is_set__impl blue_led__is_set__impl
-#define set__impl blue_led__set__impl
-
-blue_led_t const blue_led = {.set = &set__impl
-                                    ,
-                             .is_set = &is_set__impl
-                            };
-
-
-#undef is_set__impl
-#undef set__impl
-#define is_set__impl blue_led__is_set__impl
-#define set__impl blue_led__set__impl
-
-
-;
-
-#define is_set__impl blue_led__is_set__impl
-#define set__impl blue_led__set__impl
-
-
-
-
-
-#undef is_set__impl
-#undef set__impl
-;
-
-
-
-;
-typedef struct {
-    void (* const set)(u8 state);
-    u8 (* const is_set)();
-} hdd_led__port_t;
-
-extern hdd_led__port_t const hdd_led__port;
-
-static AKAT_FORCE_INLINE void hdd_led__port__set__impl(u8 state) {
-#define set__impl hdd_led__port__set__impl
-
-    if (state) {
-        PORTB |= 1 << 3;  //Set PORTB of B3 to 1
-    } else {
-        PORTB &= ~(1 << 3);  //Set PORTB of B3 to 0
-    }
-
-#undef set__impl
-}
-static AKAT_FORCE_INLINE u8 hdd_led__port__is_set__impl() {
-#define is_set__impl hdd_led__port__is_set__impl
-#define set__impl hdd_led__port__set__impl
-    return PORTB & (1 << 3);  //Get value of PORTB for B3
-#undef is_set__impl
-#undef set__impl
-}
-#define is_set__impl hdd_led__port__is_set__impl
-#define set__impl hdd_led__port__set__impl
-
-hdd_led__port_t const hdd_led__port = {.set = &set__impl
-                                       ,
-                                       .is_set = &is_set__impl
-                                      };
-
-
-#undef is_set__impl
-#undef set__impl
-#define is_set__impl hdd_led__port__is_set__impl
-#define set__impl hdd_led__port__set__impl
-
-
-;
-
-#define is_set__impl hdd_led__port__is_set__impl
-#define set__impl hdd_led__port__set__impl
-
-
-
-
-
-#undef is_set__impl
-#undef set__impl
-;
-
-
-
-typedef struct {
-    void (* const set)(u8 state);
-    u8 (* const is_set)();
-} hdd_led__ddr_t;
-
-extern hdd_led__ddr_t const hdd_led__ddr;
-
-static AKAT_FORCE_INLINE void hdd_led__ddr__set__impl(u8 state) {
-#define set__impl hdd_led__ddr__set__impl
-
-    if (state) {
-        DDRB |= 1 << 3;  //Set DDRB of B3 to 1
-    } else {
-        DDRB &= ~(1 << 3);  //Set DDRB of B3 to 0
-    }
-
-#undef set__impl
-}
-static AKAT_FORCE_INLINE u8 hdd_led__ddr__is_set__impl() {
-#define is_set__impl hdd_led__ddr__is_set__impl
-#define set__impl hdd_led__ddr__set__impl
-    return DDRB & (1 << 3);  //Get value of DDRB for B3
-#undef is_set__impl
-#undef set__impl
-}
-#define is_set__impl hdd_led__ddr__is_set__impl
-#define set__impl hdd_led__ddr__set__impl
-
-hdd_led__ddr_t const hdd_led__ddr = {.set = &set__impl
-                                     ,
-                                     .is_set = &is_set__impl
-                                    };
-
-
-#undef is_set__impl
-#undef set__impl
-#define is_set__impl hdd_led__ddr__is_set__impl
-#define set__impl hdd_led__ddr__set__impl
-
-
-;
-
-#define is_set__impl hdd_led__ddr__is_set__impl
-#define set__impl hdd_led__ddr__set__impl
-
-
-
-
-
-#undef is_set__impl
-#undef set__impl
-;
-
-
-
-static AKAT_FORCE_INLINE void hdd_led__init() {
-    hdd_led__ddr.set(1); //Init B3 as output
-}
-
-;
-
-
-
-
-
-typedef struct {
-    void (* const set)(u8 state);
-    u8 (* const is_set)();
-} hdd_led_t;
-
-extern hdd_led_t const hdd_led;
-
-static AKAT_FORCE_INLINE void hdd_led__set__impl(u8 state) {
-#define set__impl hdd_led__set__impl
-    hdd_led__port.set(state);
-#undef set__impl
-}
-static AKAT_FORCE_INLINE u8 hdd_led__is_set__impl() {
-#define is_set__impl hdd_led__is_set__impl
-#define set__impl hdd_led__set__impl
-    return hdd_led__port.is_set();
-#undef is_set__impl
-#undef set__impl
-}
-#define is_set__impl hdd_led__is_set__impl
-#define set__impl hdd_led__set__impl
-
-hdd_led_t const hdd_led = {.set = &set__impl
-                                  ,
-                           .is_set = &is_set__impl
-                          };
-
-
-#undef is_set__impl
-#undef set__impl
-#define is_set__impl hdd_led__is_set__impl
-#define set__impl hdd_led__set__impl
-
-
-;
-
-#define is_set__impl hdd_led__is_set__impl
-#define set__impl hdd_led__set__impl
-
-
-
-
-
-#undef is_set__impl
-#undef set__impl
-;
-
-
-
-;
-typedef struct {
-    void (* const set)(u8 state);
-    u8 (* const is_set)();
-} pwr_led__port_t;
-
-extern pwr_led__port_t const pwr_led__port;
-
-static AKAT_FORCE_INLINE void pwr_led__port__set__impl(u8 state) {
-#define set__impl pwr_led__port__set__impl
-
-    if (state) {
-        PORTB |= 1 << 4;  //Set PORTB of B4 to 1
-    } else {
-        PORTB &= ~(1 << 4);  //Set PORTB of B4 to 0
-    }
-
-#undef set__impl
-}
-static AKAT_FORCE_INLINE u8 pwr_led__port__is_set__impl() {
-#define is_set__impl pwr_led__port__is_set__impl
-#define set__impl pwr_led__port__set__impl
-    return PORTB & (1 << 4);  //Get value of PORTB for B4
-#undef is_set__impl
-#undef set__impl
-}
-#define is_set__impl pwr_led__port__is_set__impl
-#define set__impl pwr_led__port__set__impl
-
-pwr_led__port_t const pwr_led__port = {.set = &set__impl
-                                       ,
-                                       .is_set = &is_set__impl
-                                      };
-
-
-#undef is_set__impl
-#undef set__impl
-#define is_set__impl pwr_led__port__is_set__impl
-#define set__impl pwr_led__port__set__impl
-
-
-;
-
-#define is_set__impl pwr_led__port__is_set__impl
-#define set__impl pwr_led__port__set__impl
-
-
-
-
-
-#undef is_set__impl
-#undef set__impl
-;
-
-
-
-typedef struct {
-    void (* const set)(u8 state);
-    u8 (* const is_set)();
-} pwr_led__ddr_t;
-
-extern pwr_led__ddr_t const pwr_led__ddr;
-
-static AKAT_FORCE_INLINE void pwr_led__ddr__set__impl(u8 state) {
-#define set__impl pwr_led__ddr__set__impl
-
-    if (state) {
-        DDRB |= 1 << 4;  //Set DDRB of B4 to 1
-    } else {
-        DDRB &= ~(1 << 4);  //Set DDRB of B4 to 0
-    }
-
-#undef set__impl
-}
-static AKAT_FORCE_INLINE u8 pwr_led__ddr__is_set__impl() {
-#define is_set__impl pwr_led__ddr__is_set__impl
-#define set__impl pwr_led__ddr__set__impl
-    return DDRB & (1 << 4);  //Get value of DDRB for B4
-#undef is_set__impl
-#undef set__impl
-}
-#define is_set__impl pwr_led__ddr__is_set__impl
-#define set__impl pwr_led__ddr__set__impl
-
-pwr_led__ddr_t const pwr_led__ddr = {.set = &set__impl
-                                     ,
-                                     .is_set = &is_set__impl
-                                    };
-
-
-#undef is_set__impl
-#undef set__impl
-#define is_set__impl pwr_led__ddr__is_set__impl
-#define set__impl pwr_led__ddr__set__impl
-
-
-;
-
-#define is_set__impl pwr_led__ddr__is_set__impl
-#define set__impl pwr_led__ddr__set__impl
-
-
-
-
-
-#undef is_set__impl
-#undef set__impl
-;
-
-
-
-static AKAT_FORCE_INLINE void pwr_led__init() {
-    pwr_led__ddr.set(1); //Init B4 as output
-}
-
-;
-
-
-
-
-
-typedef struct {
-    void (* const set)(u8 state);
-    u8 (* const is_set)();
-} pwr_led_t;
-
-extern pwr_led_t const pwr_led;
-
-static AKAT_FORCE_INLINE void pwr_led__set__impl(u8 state) {
-#define set__impl pwr_led__set__impl
-    pwr_led__port.set(state);
-#undef set__impl
-}
-static AKAT_FORCE_INLINE u8 pwr_led__is_set__impl() {
-#define is_set__impl pwr_led__is_set__impl
-#define set__impl pwr_led__set__impl
-    return pwr_led__port.is_set();
-#undef is_set__impl
-#undef set__impl
-}
-#define is_set__impl pwr_led__is_set__impl
-#define set__impl pwr_led__set__impl
-
-pwr_led_t const pwr_led = {.set = &set__impl
-                                  ,
-                           .is_set = &is_set__impl
-                          };
-
-
-#undef is_set__impl
-#undef set__impl
-#define is_set__impl pwr_led__is_set__impl
-#define set__impl pwr_led__set__impl
-
-
-;
-
-#define is_set__impl pwr_led__is_set__impl
-#define set__impl pwr_led__set__impl
-
-
-
-
-
-#undef is_set__impl
-#undef set__impl
-;
-
-
-
-;
-
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-// ATX PS ON
-
-typedef struct {
-    void (* const set)(u8 state);
-    u8 (* const is_set)();
-} ps_on__port_t;
-
-extern ps_on__port_t const ps_on__port;
-
-static AKAT_FORCE_INLINE void ps_on__port__set__impl(u8 state) {
-#define set__impl ps_on__port__set__impl
-
-    if (state) {
-        PORTC |= 1 << 0;  //Set PORTC of C0 to 1
-    } else {
-        PORTC &= ~(1 << 0);  //Set PORTC of C0 to 0
-    }
-
-#undef set__impl
-}
-static AKAT_FORCE_INLINE u8 ps_on__port__is_set__impl() {
-#define is_set__impl ps_on__port__is_set__impl
-#define set__impl ps_on__port__set__impl
-    return PORTC & (1 << 0);  //Get value of PORTC for C0
-#undef is_set__impl
-#undef set__impl
-}
-#define is_set__impl ps_on__port__is_set__impl
-#define set__impl ps_on__port__set__impl
-
-ps_on__port_t const ps_on__port = {.set = &set__impl
-                                   ,
-                                   .is_set = &is_set__impl
-                                  };
-
-
-#undef is_set__impl
-#undef set__impl
-#define is_set__impl ps_on__port__is_set__impl
-#define set__impl ps_on__port__set__impl
-
-
-;
-
-#define is_set__impl ps_on__port__is_set__impl
-#define set__impl ps_on__port__set__impl
-
-
-
-
-
-#undef is_set__impl
-#undef set__impl
-;
-
-
-
-typedef struct {
-    void (* const set)(u8 state);
-    u8 (* const is_set)();
-} ps_on__ddr_t;
-
-extern ps_on__ddr_t const ps_on__ddr;
-
-static AKAT_FORCE_INLINE void ps_on__ddr__set__impl(u8 state) {
-#define set__impl ps_on__ddr__set__impl
-
-    if (state) {
-        DDRC |= 1 << 0;  //Set DDRC of C0 to 1
-    } else {
-        DDRC &= ~(1 << 0);  //Set DDRC of C0 to 0
-    }
-
-#undef set__impl
-}
-static AKAT_FORCE_INLINE u8 ps_on__ddr__is_set__impl() {
-#define is_set__impl ps_on__ddr__is_set__impl
-#define set__impl ps_on__ddr__set__impl
-    return DDRC & (1 << 0);  //Get value of DDRC for C0
-#undef is_set__impl
-#undef set__impl
-}
-#define is_set__impl ps_on__ddr__is_set__impl
-#define set__impl ps_on__ddr__set__impl
-
-ps_on__ddr_t const ps_on__ddr = {.set = &set__impl
-                                        ,
-                                 .is_set = &is_set__impl
-                                };
-
-
-#undef is_set__impl
-#undef set__impl
-#define is_set__impl ps_on__ddr__is_set__impl
-#define set__impl ps_on__ddr__set__impl
-
-
-;
-
-#define is_set__impl ps_on__ddr__is_set__impl
-#define set__impl ps_on__ddr__set__impl
-
-
-
-
-
-#undef is_set__impl
-#undef set__impl
-;
-
-
-
-static AKAT_FORCE_INLINE void ps_on__init() {
-    ps_on__ddr.set(1); //Init C0 as output
-}
-
-;
-
-
-
-
-
-typedef struct {
-    void (* const set)(u8 state);
-    u8 (* const is_set)();
-} ps_on_t;
-
-extern ps_on_t const ps_on;
-
-static AKAT_FORCE_INLINE void ps_on__set__impl(u8 state) {
-#define set__impl ps_on__set__impl
-    ps_on__port.set(state);
-#undef set__impl
-}
-static AKAT_FORCE_INLINE u8 ps_on__is_set__impl() {
-#define is_set__impl ps_on__is_set__impl
-#define set__impl ps_on__set__impl
-    return ps_on__port.is_set();
-#undef is_set__impl
-#undef set__impl
-}
-#define is_set__impl ps_on__is_set__impl
-#define set__impl ps_on__set__impl
-
-ps_on_t const ps_on = {.set = &set__impl
-                              ,
-                       .is_set = &is_set__impl
-                      };
-
-
-#undef is_set__impl
-#undef set__impl
-#define is_set__impl ps_on__is_set__impl
-#define set__impl ps_on__set__impl
-
-
-;
-
-#define is_set__impl ps_on__is_set__impl
-#define set__impl ps_on__set__impl
-
-
-
-
-
-#undef is_set__impl
-#undef set__impl
-;
-
-
-
-;
-
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-// ATX POWER BUTTON
-
-typedef struct {
-    void (* const set)(u8 state);
-    u8 (* const is_set)();
-} pwr_button__port_t;
-
-extern pwr_button__port_t const pwr_button__port;
-
-static AKAT_FORCE_INLINE void pwr_button__port__set__impl(u8 state) {
-#define set__impl pwr_button__port__set__impl
-
-    if (state) {
-        PORTB |= 1 << 1;  //Set PORTB of B1 to 1
-    } else {
-        PORTB &= ~(1 << 1);  //Set PORTB of B1 to 0
-    }
-
-#undef set__impl
-}
-static AKAT_FORCE_INLINE u8 pwr_button__port__is_set__impl() {
-#define is_set__impl pwr_button__port__is_set__impl
-#define set__impl pwr_button__port__set__impl
-    return PORTB & (1 << 1);  //Get value of PORTB for B1
-#undef is_set__impl
-#undef set__impl
-}
-#define is_set__impl pwr_button__port__is_set__impl
-#define set__impl pwr_button__port__set__impl
-
-pwr_button__port_t const pwr_button__port = {.set = &set__impl
-                                             ,
-                                             .is_set = &is_set__impl
-                                            };
-
-
-#undef is_set__impl
-#undef set__impl
-#define is_set__impl pwr_button__port__is_set__impl
-#define set__impl pwr_button__port__set__impl
-
-
-;
-
-#define is_set__impl pwr_button__port__is_set__impl
-#define set__impl pwr_button__port__set__impl
-
-
-
-
-
-#undef is_set__impl
-#undef set__impl
-;
-
-
-
-typedef struct {
-    void (* const set)(u8 state);
-    u8 (* const is_set)();
-} pwr_button__ddr_t;
-
-extern pwr_button__ddr_t const pwr_button__ddr;
-
-static AKAT_FORCE_INLINE void pwr_button__ddr__set__impl(u8 state) {
-#define set__impl pwr_button__ddr__set__impl
-
-    if (state) {
-        DDRB |= 1 << 1;  //Set DDRB of B1 to 1
-    } else {
-        DDRB &= ~(1 << 1);  //Set DDRB of B1 to 0
-    }
-
-#undef set__impl
-}
-static AKAT_FORCE_INLINE u8 pwr_button__ddr__is_set__impl() {
-#define is_set__impl pwr_button__ddr__is_set__impl
-#define set__impl pwr_button__ddr__set__impl
-    return DDRB & (1 << 1);  //Get value of DDRB for B1
-#undef is_set__impl
-#undef set__impl
-}
-#define is_set__impl pwr_button__ddr__is_set__impl
-#define set__impl pwr_button__ddr__set__impl
-
-pwr_button__ddr_t const pwr_button__ddr = {.set = &set__impl
-                                           ,
-                                           .is_set = &is_set__impl
-                                          };
-
-
-#undef is_set__impl
-#undef set__impl
-#define is_set__impl pwr_button__ddr__is_set__impl
-#define set__impl pwr_button__ddr__set__impl
-
-
-;
-
-#define is_set__impl pwr_button__ddr__is_set__impl
-#define set__impl pwr_button__ddr__set__impl
-
-
-
-
-
-#undef is_set__impl
-#undef set__impl
-;
-
-
-
-typedef struct {
-    void (* const set)(u8 state);
-    u8 (* const is_set)();
-} pwr_button__pin_t;
-
-extern pwr_button__pin_t const pwr_button__pin;
-
-static AKAT_FORCE_INLINE void pwr_button__pin__set__impl(u8 state) {
-#define set__impl pwr_button__pin__set__impl
-
-    if (state) {
-        PINB |= 1 << 1;  //Set PINB of B1 to 1
-    } else {
-        PINB &= ~(1 << 1);  //Set PINB of B1 to 0
-    }
-
-#undef set__impl
-}
-static AKAT_FORCE_INLINE u8 pwr_button__pin__is_set__impl() {
-#define is_set__impl pwr_button__pin__is_set__impl
-#define set__impl pwr_button__pin__set__impl
-    return PINB & (1 << 1);  //Get value of PINB for B1
-#undef is_set__impl
-#undef set__impl
-}
-#define is_set__impl pwr_button__pin__is_set__impl
-#define set__impl pwr_button__pin__set__impl
-
-pwr_button__pin_t const pwr_button__pin = {.set = &set__impl
-                                           ,
-                                           .is_set = &is_set__impl
-                                          };
-
-
-#undef is_set__impl
-#undef set__impl
-#define is_set__impl pwr_button__pin__is_set__impl
-#define set__impl pwr_button__pin__set__impl
-
-
-;
-
-#define is_set__impl pwr_button__pin__is_set__impl
-#define set__impl pwr_button__pin__set__impl
-
-
-
-
-
-#undef is_set__impl
-#undef set__impl
-;
-
-
-
-static AKAT_FORCE_INLINE void pwr_button__init() {
-    pwr_button__ddr.set(0);
-    pwr_button__port.set(1);
-}
-
-;
-
-
-
-
-
-typedef struct {
-    u8 (* const is_set)();
-} pwr_button_t;
-
-extern pwr_button_t const pwr_button;
-
-static AKAT_FORCE_INLINE u8 pwr_button__is_set__impl() {
-#define is_set__impl pwr_button__is_set__impl
-    return pwr_button__pin.is_set();
-#undef is_set__impl
-}
-#define is_set__impl pwr_button__is_set__impl
-
-pwr_button_t const pwr_button = {.is_set = &is_set__impl
-                                };
-
-
-#undef is_set__impl
-#define is_set__impl pwr_button__is_set__impl
-
-
-;
-
-#define is_set__impl pwr_button__is_set__impl
-
-
-
-
-#undef is_set__impl
-;
-
-
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-// Watchdog
-
-#include <avr/wdt.h>
-
-static AKAT_FORCE_INLINE void watchdog_init() {
-    wdt_enable(WDTO_8S);
-}
-
-;
-
-
-
-
-
-static AKAT_FORCE_INLINE void watchdog_reset() {
-    wdt_reset();
-}
-
-;
-
-
-
-
-;
-
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
 // DS18B20
-
 // Read temperature from DS18B20.
 // DS18B20 is supposed to be connected to the given port and must be properly powered.
 // (parasitic powering mode is not supported/tested).
@@ -5077,31 +4151,119 @@ ds18b20_ext_t const ds18b20_ext = {.get_updated_deciseconds_ago = &get_updated_d
 
 ;
 
+// Let pins
+typedef struct {
+    void (* const set)(u8 state);
+    u8 (* const is_set)();
+} board_led__port_t;
 
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-// Activity indication
+extern board_led__port_t const board_led__port;
 
-// This piece of code will be executed in akat event/thread loop every 1/10 second.
-// We use to turn the blue led ON and OFF
+static AKAT_FORCE_INLINE void board_led__port__set__impl(u8 state) {
+#define set__impl board_led__port__set__impl
 
-static u8 activity_led__state = 0;
-static u8 activity_led__state2 = 0;
-static AKAT_FORCE_INLINE void activity_led() {
-#define state activity_led__state
-#define state2 activity_led__state2
-    ;
-    ; //TODO: TEMP
-    blue_led.set(state);
-    hdd_led.set((state2 % 100) > 60 ? 1 : 0); //TODO: TEMP
-    pwr_led.set(pwr_button.is_set()); //TODO: TEMP
-    ps_on.set((state2 % 100) < 50 ? 1 : 0); //TODO: TEMP
-    state = !state;
-    state2 += 1; //TODO: TEMP
-#undef state
-#undef state2
+    if (state) {
+        PORTB |= 1 << 5;  //Set PORTB of B5 to 1
+    } else {
+        PORTB &= ~(1 << 5);  //Set PORTB of B5 to 0
+    }
+
+#undef set__impl
+}
+static AKAT_FORCE_INLINE u8 board_led__port__is_set__impl() {
+#define is_set__impl board_led__port__is_set__impl
+#define set__impl board_led__port__set__impl
+    return PORTB & (1 << 5);  //Get value of PORTB for B5
+#undef is_set__impl
+#undef set__impl
+}
+#define is_set__impl board_led__port__is_set__impl
+#define set__impl board_led__port__set__impl
+
+board_led__port_t const board_led__port = {.set = &set__impl
+                                           ,
+                                           .is_set = &is_set__impl
+                                          };
+
+
+#undef is_set__impl
+#undef set__impl
+#define is_set__impl board_led__port__is_set__impl
+#define set__impl board_led__port__set__impl
+
+
+;
+
+#define is_set__impl board_led__port__is_set__impl
+#define set__impl board_led__port__set__impl
+
+
+
+
+
+#undef is_set__impl
+#undef set__impl
+;
+
+
+
+typedef struct {
+    void (* const set)(u8 state);
+    u8 (* const is_set)();
+} board_led__ddr_t;
+
+extern board_led__ddr_t const board_led__ddr;
+
+static AKAT_FORCE_INLINE void board_led__ddr__set__impl(u8 state) {
+#define set__impl board_led__ddr__set__impl
+
+    if (state) {
+        DDRB |= 1 << 5;  //Set DDRB of B5 to 1
+    } else {
+        DDRB &= ~(1 << 5);  //Set DDRB of B5 to 0
+    }
+
+#undef set__impl
+}
+static AKAT_FORCE_INLINE u8 board_led__ddr__is_set__impl() {
+#define is_set__impl board_led__ddr__is_set__impl
+#define set__impl board_led__ddr__set__impl
+    return DDRB & (1 << 5);  //Get value of DDRB for B5
+#undef is_set__impl
+#undef set__impl
+}
+#define is_set__impl board_led__ddr__is_set__impl
+#define set__impl board_led__ddr__set__impl
+
+board_led__ddr_t const board_led__ddr = {.set = &set__impl
+                                         ,
+                                         .is_set = &is_set__impl
+                                        };
+
+
+#undef is_set__impl
+#undef set__impl
+#define is_set__impl board_led__ddr__is_set__impl
+#define set__impl board_led__ddr__set__impl
+
+
+;
+
+#define is_set__impl board_led__ddr__is_set__impl
+#define set__impl board_led__ddr__set__impl
+
+
+
+
+
+#undef is_set__impl
+#undef set__impl
+;
+
+
+
+static AKAT_FORCE_INLINE void board_led__init() {
+    board_led__ddr.set(1); //Init B5 as output
 }
 
 ;
@@ -5110,6 +4272,1135 @@ static AKAT_FORCE_INLINE void activity_led() {
 
 
 
+typedef struct {
+    void (* const set)(u8 state);
+    u8 (* const is_set)();
+} board_led_t;
+
+extern board_led_t const board_led;
+
+static AKAT_FORCE_INLINE void board_led__set__impl(u8 state) {
+#define set__impl board_led__set__impl
+    board_led__port.set(state);
+#undef set__impl
+}
+static AKAT_FORCE_INLINE u8 board_led__is_set__impl() {
+#define is_set__impl board_led__is_set__impl
+#define set__impl board_led__set__impl
+    return board_led__port.is_set();
+#undef is_set__impl
+#undef set__impl
+}
+#define is_set__impl board_led__is_set__impl
+#define set__impl board_led__set__impl
+
+board_led_t const board_led = {.set = &set__impl
+                                      ,
+                               .is_set = &is_set__impl
+                              };
+
+
+#undef is_set__impl
+#undef set__impl
+#define is_set__impl board_led__is_set__impl
+#define set__impl board_led__set__impl
+
+
+;
+
+#define is_set__impl board_led__is_set__impl
+#define set__impl board_led__set__impl
+
+
+
+
+
+#undef is_set__impl
+#undef set__impl
+;
+
+
+
+;
+typedef struct {
+    void (* const set)(u8 state);
+    u8 (* const is_set)();
+} hdd_led__port_t;
+
+extern hdd_led__port_t const hdd_led__port;
+
+static AKAT_FORCE_INLINE void hdd_led__port__set__impl(u8 state) {
+#define set__impl hdd_led__port__set__impl
+
+    if (state) {
+        PORTB |= 1 << 3;  //Set PORTB of B3 to 1
+    } else {
+        PORTB &= ~(1 << 3);  //Set PORTB of B3 to 0
+    }
+
+#undef set__impl
+}
+static AKAT_FORCE_INLINE u8 hdd_led__port__is_set__impl() {
+#define is_set__impl hdd_led__port__is_set__impl
+#define set__impl hdd_led__port__set__impl
+    return PORTB & (1 << 3);  //Get value of PORTB for B3
+#undef is_set__impl
+#undef set__impl
+}
+#define is_set__impl hdd_led__port__is_set__impl
+#define set__impl hdd_led__port__set__impl
+
+hdd_led__port_t const hdd_led__port = {.set = &set__impl
+                                       ,
+                                       .is_set = &is_set__impl
+                                      };
+
+
+#undef is_set__impl
+#undef set__impl
+#define is_set__impl hdd_led__port__is_set__impl
+#define set__impl hdd_led__port__set__impl
+
+
+;
+
+#define is_set__impl hdd_led__port__is_set__impl
+#define set__impl hdd_led__port__set__impl
+
+
+
+
+
+#undef is_set__impl
+#undef set__impl
+;
+
+
+
+typedef struct {
+    void (* const set)(u8 state);
+    u8 (* const is_set)();
+} hdd_led__ddr_t;
+
+extern hdd_led__ddr_t const hdd_led__ddr;
+
+static AKAT_FORCE_INLINE void hdd_led__ddr__set__impl(u8 state) {
+#define set__impl hdd_led__ddr__set__impl
+
+    if (state) {
+        DDRB |= 1 << 3;  //Set DDRB of B3 to 1
+    } else {
+        DDRB &= ~(1 << 3);  //Set DDRB of B3 to 0
+    }
+
+#undef set__impl
+}
+static AKAT_FORCE_INLINE u8 hdd_led__ddr__is_set__impl() {
+#define is_set__impl hdd_led__ddr__is_set__impl
+#define set__impl hdd_led__ddr__set__impl
+    return DDRB & (1 << 3);  //Get value of DDRB for B3
+#undef is_set__impl
+#undef set__impl
+}
+#define is_set__impl hdd_led__ddr__is_set__impl
+#define set__impl hdd_led__ddr__set__impl
+
+hdd_led__ddr_t const hdd_led__ddr = {.set = &set__impl
+                                     ,
+                                     .is_set = &is_set__impl
+                                    };
+
+
+#undef is_set__impl
+#undef set__impl
+#define is_set__impl hdd_led__ddr__is_set__impl
+#define set__impl hdd_led__ddr__set__impl
+
+
+;
+
+#define is_set__impl hdd_led__ddr__is_set__impl
+#define set__impl hdd_led__ddr__set__impl
+
+
+
+
+
+#undef is_set__impl
+#undef set__impl
+;
+
+
+
+static AKAT_FORCE_INLINE void hdd_led__init() {
+    hdd_led__ddr.set(1); //Init B3 as output
+}
+
+;
+
+
+
+
+
+typedef struct {
+    void (* const set)(u8 state);
+    u8 (* const is_set)();
+} hdd_led_t;
+
+extern hdd_led_t const hdd_led;
+
+static AKAT_FORCE_INLINE void hdd_led__set__impl(u8 state) {
+#define set__impl hdd_led__set__impl
+    hdd_led__port.set(state);
+#undef set__impl
+}
+static AKAT_FORCE_INLINE u8 hdd_led__is_set__impl() {
+#define is_set__impl hdd_led__is_set__impl
+#define set__impl hdd_led__set__impl
+    return hdd_led__port.is_set();
+#undef is_set__impl
+#undef set__impl
+}
+#define is_set__impl hdd_led__is_set__impl
+#define set__impl hdd_led__set__impl
+
+hdd_led_t const hdd_led = {.set = &set__impl
+                                  ,
+                           .is_set = &is_set__impl
+                          };
+
+
+#undef is_set__impl
+#undef set__impl
+#define is_set__impl hdd_led__is_set__impl
+#define set__impl hdd_led__set__impl
+
+
+;
+
+#define is_set__impl hdd_led__is_set__impl
+#define set__impl hdd_led__set__impl
+
+
+
+
+
+#undef is_set__impl
+#undef set__impl
+;
+
+
+
+;
+typedef struct {
+    void (* const set)(u8 state);
+    u8 (* const is_set)();
+} pwr_led__port_t;
+
+extern pwr_led__port_t const pwr_led__port;
+
+static AKAT_FORCE_INLINE void pwr_led__port__set__impl(u8 state) {
+#define set__impl pwr_led__port__set__impl
+
+    if (state) {
+        PORTB |= 1 << 4;  //Set PORTB of B4 to 1
+    } else {
+        PORTB &= ~(1 << 4);  //Set PORTB of B4 to 0
+    }
+
+#undef set__impl
+}
+static AKAT_FORCE_INLINE u8 pwr_led__port__is_set__impl() {
+#define is_set__impl pwr_led__port__is_set__impl
+#define set__impl pwr_led__port__set__impl
+    return PORTB & (1 << 4);  //Get value of PORTB for B4
+#undef is_set__impl
+#undef set__impl
+}
+#define is_set__impl pwr_led__port__is_set__impl
+#define set__impl pwr_led__port__set__impl
+
+pwr_led__port_t const pwr_led__port = {.set = &set__impl
+                                       ,
+                                       .is_set = &is_set__impl
+                                      };
+
+
+#undef is_set__impl
+#undef set__impl
+#define is_set__impl pwr_led__port__is_set__impl
+#define set__impl pwr_led__port__set__impl
+
+
+;
+
+#define is_set__impl pwr_led__port__is_set__impl
+#define set__impl pwr_led__port__set__impl
+
+
+
+
+
+#undef is_set__impl
+#undef set__impl
+;
+
+
+
+typedef struct {
+    void (* const set)(u8 state);
+    u8 (* const is_set)();
+} pwr_led__ddr_t;
+
+extern pwr_led__ddr_t const pwr_led__ddr;
+
+static AKAT_FORCE_INLINE void pwr_led__ddr__set__impl(u8 state) {
+#define set__impl pwr_led__ddr__set__impl
+
+    if (state) {
+        DDRB |= 1 << 4;  //Set DDRB of B4 to 1
+    } else {
+        DDRB &= ~(1 << 4);  //Set DDRB of B4 to 0
+    }
+
+#undef set__impl
+}
+static AKAT_FORCE_INLINE u8 pwr_led__ddr__is_set__impl() {
+#define is_set__impl pwr_led__ddr__is_set__impl
+#define set__impl pwr_led__ddr__set__impl
+    return DDRB & (1 << 4);  //Get value of DDRB for B4
+#undef is_set__impl
+#undef set__impl
+}
+#define is_set__impl pwr_led__ddr__is_set__impl
+#define set__impl pwr_led__ddr__set__impl
+
+pwr_led__ddr_t const pwr_led__ddr = {.set = &set__impl
+                                     ,
+                                     .is_set = &is_set__impl
+                                    };
+
+
+#undef is_set__impl
+#undef set__impl
+#define is_set__impl pwr_led__ddr__is_set__impl
+#define set__impl pwr_led__ddr__set__impl
+
+
+;
+
+#define is_set__impl pwr_led__ddr__is_set__impl
+#define set__impl pwr_led__ddr__set__impl
+
+
+
+
+
+#undef is_set__impl
+#undef set__impl
+;
+
+
+
+static AKAT_FORCE_INLINE void pwr_led__init() {
+    pwr_led__ddr.set(1); //Init B4 as output
+}
+
+;
+
+
+
+
+
+typedef struct {
+    void (* const set)(u8 state);
+    u8 (* const is_set)();
+} pwr_led_t;
+
+extern pwr_led_t const pwr_led;
+
+static AKAT_FORCE_INLINE void pwr_led__set__impl(u8 state) {
+#define set__impl pwr_led__set__impl
+    pwr_led__port.set(state);
+#undef set__impl
+}
+static AKAT_FORCE_INLINE u8 pwr_led__is_set__impl() {
+#define is_set__impl pwr_led__is_set__impl
+#define set__impl pwr_led__set__impl
+    return pwr_led__port.is_set();
+#undef is_set__impl
+#undef set__impl
+}
+#define is_set__impl pwr_led__is_set__impl
+#define set__impl pwr_led__set__impl
+
+pwr_led_t const pwr_led = {.set = &set__impl
+                                  ,
+                           .is_set = &is_set__impl
+                          };
+
+
+#undef is_set__impl
+#undef set__impl
+#define is_set__impl pwr_led__is_set__impl
+#define set__impl pwr_led__set__impl
+
+
+;
+
+#define is_set__impl pwr_led__is_set__impl
+#define set__impl pwr_led__set__impl
+
+
+
+
+
+#undef is_set__impl
+#undef set__impl
+;
+
+
+
+;
+
+// ATX PS ON Pin, the one that turns ATX on or OFF
+// Settings this to output and ZERO will turn ATX ON
+typedef struct {
+    void (* const set)(u8 state);
+    u8 (* const is_set)();
+} ps_on__port_t;
+
+extern ps_on__port_t const ps_on__port;
+
+static AKAT_FORCE_INLINE void ps_on__port__set__impl(u8 state) {
+#define set__impl ps_on__port__set__impl
+
+    if (state) {
+        PORTC |= 1 << 0;  //Set PORTC of C0 to 1
+    } else {
+        PORTC &= ~(1 << 0);  //Set PORTC of C0 to 0
+    }
+
+#undef set__impl
+}
+static AKAT_FORCE_INLINE u8 ps_on__port__is_set__impl() {
+#define is_set__impl ps_on__port__is_set__impl
+#define set__impl ps_on__port__set__impl
+    return PORTC & (1 << 0);  //Get value of PORTC for C0
+#undef is_set__impl
+#undef set__impl
+}
+#define is_set__impl ps_on__port__is_set__impl
+#define set__impl ps_on__port__set__impl
+
+ps_on__port_t const ps_on__port = {.set = &set__impl
+                                   ,
+                                   .is_set = &is_set__impl
+                                  };
+
+
+#undef is_set__impl
+#undef set__impl
+#define is_set__impl ps_on__port__is_set__impl
+#define set__impl ps_on__port__set__impl
+
+
+;
+
+#define is_set__impl ps_on__port__is_set__impl
+#define set__impl ps_on__port__set__impl
+
+
+
+
+
+#undef is_set__impl
+#undef set__impl
+;
+
+
+
+typedef struct {
+    void (* const set)(u8 state);
+    u8 (* const is_set)();
+} ps_on__ddr_t;
+
+extern ps_on__ddr_t const ps_on__ddr;
+
+static AKAT_FORCE_INLINE void ps_on__ddr__set__impl(u8 state) {
+#define set__impl ps_on__ddr__set__impl
+
+    if (state) {
+        DDRC |= 1 << 0;  //Set DDRC of C0 to 1
+    } else {
+        DDRC &= ~(1 << 0);  //Set DDRC of C0 to 0
+    }
+
+#undef set__impl
+}
+static AKAT_FORCE_INLINE u8 ps_on__ddr__is_set__impl() {
+#define is_set__impl ps_on__ddr__is_set__impl
+#define set__impl ps_on__ddr__set__impl
+    return DDRC & (1 << 0);  //Get value of DDRC for C0
+#undef is_set__impl
+#undef set__impl
+}
+#define is_set__impl ps_on__ddr__is_set__impl
+#define set__impl ps_on__ddr__set__impl
+
+ps_on__ddr_t const ps_on__ddr = {.set = &set__impl
+                                        ,
+                                 .is_set = &is_set__impl
+                                };
+
+
+#undef is_set__impl
+#undef set__impl
+#define is_set__impl ps_on__ddr__is_set__impl
+#define set__impl ps_on__ddr__set__impl
+
+
+;
+
+#define is_set__impl ps_on__ddr__is_set__impl
+#define set__impl ps_on__ddr__set__impl
+
+
+
+
+
+#undef is_set__impl
+#undef set__impl
+;
+
+
+
+typedef struct {
+    void (* const set)(u8 state);
+    u8 (* const is_set)();
+} ps_on__pin_t;
+
+extern ps_on__pin_t const ps_on__pin;
+
+static AKAT_FORCE_INLINE void ps_on__pin__set__impl(u8 state) {
+#define set__impl ps_on__pin__set__impl
+
+    if (state) {
+        PINC |= 1 << 0;  //Set PINC of C0 to 1
+    } else {
+        PINC &= ~(1 << 0);  //Set PINC of C0 to 0
+    }
+
+#undef set__impl
+}
+static AKAT_FORCE_INLINE u8 ps_on__pin__is_set__impl() {
+#define is_set__impl ps_on__pin__is_set__impl
+#define set__impl ps_on__pin__set__impl
+    return PINC & (1 << 0);  //Get value of PINC for C0
+#undef is_set__impl
+#undef set__impl
+}
+#define is_set__impl ps_on__pin__is_set__impl
+#define set__impl ps_on__pin__set__impl
+
+ps_on__pin_t const ps_on__pin = {.set = &set__impl
+                                        ,
+                                 .is_set = &is_set__impl
+                                };
+
+
+#undef is_set__impl
+#undef set__impl
+#define is_set__impl ps_on__pin__is_set__impl
+#define set__impl ps_on__pin__set__impl
+
+
+;
+
+#define is_set__impl ps_on__pin__is_set__impl
+#define set__impl ps_on__pin__set__impl
+
+
+
+
+
+#undef is_set__impl
+#undef set__impl
+;
+
+
+
+typedef struct {
+    void (* const set_input_mode)();
+    void (* const set_output_mode)();
+    u8 (* const is_set)();
+    void (* const set)(u8 state);
+} ps_on_t;
+
+extern ps_on_t const ps_on;
+
+static AKAT_FORCE_INLINE void ps_on__set_input_mode__impl() {
+#define set_input_mode__impl ps_on__set_input_mode__impl
+    ps_on__ddr.set(0);
+    ps_on__port.set(1);
+#undef set_input_mode__impl
+}
+static AKAT_FORCE_INLINE void ps_on__set_output_mode__impl() {
+#define set_input_mode__impl ps_on__set_input_mode__impl
+#define set_output_mode__impl ps_on__set_output_mode__impl
+    ps_on__ddr.set(1);
+#undef set_input_mode__impl
+#undef set_output_mode__impl
+}
+static AKAT_FORCE_INLINE u8 ps_on__is_set__impl() {
+#define is_set__impl ps_on__is_set__impl
+#define set_input_mode__impl ps_on__set_input_mode__impl
+#define set_output_mode__impl ps_on__set_output_mode__impl
+    return ps_on__pin.is_set();
+#undef is_set__impl
+#undef set_input_mode__impl
+#undef set_output_mode__impl
+}
+static AKAT_FORCE_INLINE void ps_on__set__impl(u8 state) {
+#define is_set__impl ps_on__is_set__impl
+#define set__impl ps_on__set__impl
+#define set_input_mode__impl ps_on__set_input_mode__impl
+#define set_output_mode__impl ps_on__set_output_mode__impl
+    ps_on__port.set(state);
+#undef is_set__impl
+#undef set__impl
+#undef set_input_mode__impl
+#undef set_output_mode__impl
+}
+#define is_set__impl ps_on__is_set__impl
+#define set__impl ps_on__set__impl
+#define set_input_mode__impl ps_on__set_input_mode__impl
+#define set_output_mode__impl ps_on__set_output_mode__impl
+
+ps_on_t const ps_on = {.set_input_mode = &set_input_mode__impl
+                       ,
+                       .set_output_mode = &set_output_mode__impl
+                               ,
+                       .is_set = &is_set__impl
+                                 ,
+                       .set = &set__impl
+                      };
+
+
+#undef is_set__impl
+#undef set__impl
+#undef set_input_mode__impl
+#undef set_output_mode__impl
+#define is_set__impl ps_on__is_set__impl
+#define set__impl ps_on__set__impl
+#define set_input_mode__impl ps_on__set_input_mode__impl
+#define set_output_mode__impl ps_on__set_output_mode__impl
+
+
+;
+
+#define is_set__impl ps_on__is_set__impl
+#define set__impl ps_on__set__impl
+#define set_input_mode__impl ps_on__set_input_mode__impl
+#define set_output_mode__impl ps_on__set_output_mode__impl
+
+
+
+
+
+
+
+#undef is_set__impl
+#undef set__impl
+#undef set_input_mode__impl
+#undef set_output_mode__impl
+;
+
+
+
+;
+
+// Just maintain our state on every iteration of event loop.
+// Might be unnecessary but safe and simple for sure.
+static AKAT_FORCE_INLINE void ps_on_mainenance() {
+    if (power_should_be_on) {//Drop pin to ground indicating that we want ATX to be in ON state.
+        ps_on.set_output_mode();
+        ps_on.set(0);
+    } else {//Disconnect from pin. Pin will be pulled up to 5v by ATX itself
+        //and ATX will turn it off it was ON.
+        ps_on.set_input_mode();
+    }
+}
+
+;
+
+
+
+;
+
+// ATX POWER BUTTON
+typedef struct {
+    void (* const on_release)();
+    void (* const on_press)();
+    void (* const on_long_press)();
+} pwr_button_t;
+
+extern pwr_button_t const pwr_button;
+
+static void pwr_button__on_release__impl() {
+#define on_release__impl pwr_button__on_release__impl
+#undef on_release__impl
+}
+static void pwr_button__on_press__impl() {
+#define on_press__impl pwr_button__on_press__impl
+#define on_release__impl pwr_button__on_release__impl
+//Can turn on with a single press
+    //Can't turn off with a short press.
+    power_should_be_on = AKAT_ONE;
+#undef on_press__impl
+#undef on_release__impl
+}
+static void pwr_button__on_long_press__impl() {
+#define on_long_press__impl pwr_button__on_long_press__impl
+#define on_press__impl pwr_button__on_press__impl
+#define on_release__impl pwr_button__on_release__impl
+//Can both turn on and turn off with a long press
+    power_should_be_on = !power_should_be_on;
+#undef on_long_press__impl
+#undef on_press__impl
+#undef on_release__impl
+}
+#define on_long_press__impl pwr_button__on_long_press__impl
+#define on_press__impl pwr_button__on_press__impl
+#define on_release__impl pwr_button__on_release__impl
+
+pwr_button_t const pwr_button = {.on_release = &on_release__impl
+                                 ,
+                                 .on_press = &on_press__impl
+                                         ,
+                                 .on_long_press = &on_long_press__impl
+                                };
+
+
+#undef on_long_press__impl
+#undef on_press__impl
+#undef on_release__impl
+#define on_long_press__impl pwr_button__on_long_press__impl
+#define on_press__impl pwr_button__on_press__impl
+#define on_release__impl pwr_button__on_release__impl
+
+
+;
+
+#define on_long_press__impl pwr_button__on_long_press__impl
+#define on_press__impl pwr_button__on_press__impl
+#define on_release__impl pwr_button__on_release__impl
+
+
+
+
+
+
+#undef on_long_press__impl
+#undef on_press__impl
+#undef on_release__impl
+;
+
+
+
+
+static u8 pwr_button__delay = 0;
+
+;
+;
+
+
+typedef struct {
+    void (* const set)(u8 state);
+    u8 (* const is_set)();
+} pwr_button__button_full__input__port_t;
+
+extern pwr_button__button_full__input__port_t const pwr_button__button_full__input__port;
+
+static AKAT_FORCE_INLINE void pwr_button__button_full__input__port__set__impl(u8 state) {
+#define set__impl pwr_button__button_full__input__port__set__impl
+
+    if (state) {
+        PORTB |= 1 << 1;  //Set PORTB of B1 to 1
+    } else {
+        PORTB &= ~(1 << 1);  //Set PORTB of B1 to 0
+    }
+
+#undef set__impl
+}
+static AKAT_FORCE_INLINE u8 pwr_button__button_full__input__port__is_set__impl() {
+#define is_set__impl pwr_button__button_full__input__port__is_set__impl
+#define set__impl pwr_button__button_full__input__port__set__impl
+    return PORTB & (1 << 1);  //Get value of PORTB for B1
+#undef is_set__impl
+#undef set__impl
+}
+#define is_set__impl pwr_button__button_full__input__port__is_set__impl
+#define set__impl pwr_button__button_full__input__port__set__impl
+
+pwr_button__button_full__input__port_t const pwr_button__button_full__input__port = {.set = &set__impl
+                                                                                     ,
+                                                                                     .is_set = &is_set__impl
+                                                                                    };
+
+
+#undef is_set__impl
+#undef set__impl
+#define is_set__impl pwr_button__button_full__input__port__is_set__impl
+#define set__impl pwr_button__button_full__input__port__set__impl
+
+
+;
+
+#define is_set__impl pwr_button__button_full__input__port__is_set__impl
+#define set__impl pwr_button__button_full__input__port__set__impl
+
+
+
+
+
+#undef is_set__impl
+#undef set__impl
+;
+
+
+
+typedef struct {
+    void (* const set)(u8 state);
+    u8 (* const is_set)();
+} pwr_button__button_full__input__ddr_t;
+
+extern pwr_button__button_full__input__ddr_t const pwr_button__button_full__input__ddr;
+
+static AKAT_FORCE_INLINE void pwr_button__button_full__input__ddr__set__impl(u8 state) {
+#define set__impl pwr_button__button_full__input__ddr__set__impl
+
+    if (state) {
+        DDRB |= 1 << 1;  //Set DDRB of B1 to 1
+    } else {
+        DDRB &= ~(1 << 1);  //Set DDRB of B1 to 0
+    }
+
+#undef set__impl
+}
+static AKAT_FORCE_INLINE u8 pwr_button__button_full__input__ddr__is_set__impl() {
+#define is_set__impl pwr_button__button_full__input__ddr__is_set__impl
+#define set__impl pwr_button__button_full__input__ddr__set__impl
+    return DDRB & (1 << 1);  //Get value of DDRB for B1
+#undef is_set__impl
+#undef set__impl
+}
+#define is_set__impl pwr_button__button_full__input__ddr__is_set__impl
+#define set__impl pwr_button__button_full__input__ddr__set__impl
+
+pwr_button__button_full__input__ddr_t const pwr_button__button_full__input__ddr = {.set = &set__impl
+                                                                                   ,
+                                                                                   .is_set = &is_set__impl
+                                                                                  };
+
+
+#undef is_set__impl
+#undef set__impl
+#define is_set__impl pwr_button__button_full__input__ddr__is_set__impl
+#define set__impl pwr_button__button_full__input__ddr__set__impl
+
+
+;
+
+#define is_set__impl pwr_button__button_full__input__ddr__is_set__impl
+#define set__impl pwr_button__button_full__input__ddr__set__impl
+
+
+
+
+
+#undef is_set__impl
+#undef set__impl
+;
+
+
+
+typedef struct {
+    void (* const set)(u8 state);
+    u8 (* const is_set)();
+} pwr_button__button_full__input__pin_t;
+
+extern pwr_button__button_full__input__pin_t const pwr_button__button_full__input__pin;
+
+static AKAT_FORCE_INLINE void pwr_button__button_full__input__pin__set__impl(u8 state) {
+#define set__impl pwr_button__button_full__input__pin__set__impl
+
+    if (state) {
+        PINB |= 1 << 1;  //Set PINB of B1 to 1
+    } else {
+        PINB &= ~(1 << 1);  //Set PINB of B1 to 0
+    }
+
+#undef set__impl
+}
+static AKAT_FORCE_INLINE u8 pwr_button__button_full__input__pin__is_set__impl() {
+#define is_set__impl pwr_button__button_full__input__pin__is_set__impl
+#define set__impl pwr_button__button_full__input__pin__set__impl
+    return PINB & (1 << 1);  //Get value of PINB for B1
+#undef is_set__impl
+#undef set__impl
+}
+#define is_set__impl pwr_button__button_full__input__pin__is_set__impl
+#define set__impl pwr_button__button_full__input__pin__set__impl
+
+pwr_button__button_full__input__pin_t const pwr_button__button_full__input__pin = {.set = &set__impl
+                                                                                   ,
+                                                                                   .is_set = &is_set__impl
+                                                                                  };
+
+
+#undef is_set__impl
+#undef set__impl
+#define is_set__impl pwr_button__button_full__input__pin__is_set__impl
+#define set__impl pwr_button__button_full__input__pin__set__impl
+
+
+;
+
+#define is_set__impl pwr_button__button_full__input__pin__is_set__impl
+#define set__impl pwr_button__button_full__input__pin__set__impl
+
+
+
+
+
+#undef is_set__impl
+#undef set__impl
+;
+
+
+
+static AKAT_FORCE_INLINE void pwr_button__button_full__input__init() {
+    pwr_button__button_full__input__ddr.set(0);
+    pwr_button__button_full__input__port.set(1);
+}
+
+;
+
+
+
+
+
+typedef struct {
+    u8 (* const is_set)();
+} pwr_button__button_full__input_t;
+
+extern pwr_button__button_full__input_t const pwr_button__button_full__input;
+
+static AKAT_FORCE_INLINE u8 pwr_button__button_full__input__is_set__impl() {
+#define is_set__impl pwr_button__button_full__input__is_set__impl
+    return pwr_button__button_full__input__pin.is_set();
+#undef is_set__impl
+}
+#define is_set__impl pwr_button__button_full__input__is_set__impl
+
+pwr_button__button_full__input_t const pwr_button__button_full__input = {.is_set = &is_set__impl
+                                                                        };
+
+
+#undef is_set__impl
+#define is_set__impl pwr_button__button_full__input__is_set__impl
+
+
+;
+
+#define is_set__impl pwr_button__button_full__input__is_set__impl
+
+
+
+
+#undef is_set__impl
+;
+
+
+
+static akat_x_button_state_t pwr_button__button_full__state;
+
+static AKAT_FORCE_INLINE void pwr_button__button_full__init() {
+    pwr_button__button_full__state.awaiting_key_press = AKAT_TRUE;
+    pwr_button__button_full__state.checks_left = AKAT_X_BUTTON_CHECKS;
+}
+
+;
+
+
+
+
+
+typedef struct {
+    u8 (* const is_awaiting_key_press)();
+    void (* const on_press)();
+    void (* const on_release)();
+} pwr_button__button_full_t;
+
+extern pwr_button__button_full_t const pwr_button__button_full;
+
+static AKAT_FORCE_INLINE u8 pwr_button__button_full__is_awaiting_key_press__impl() {
+#define is_awaiting_key_press__impl pwr_button__button_full__is_awaiting_key_press__impl
+    return pwr_button__button_full__state.awaiting_key_press;
+#undef is_awaiting_key_press__impl
+}
+static void pwr_button__button_full__on_press__impl() {
+#define is_awaiting_key_press__impl pwr_button__button_full__is_awaiting_key_press__impl
+#define on_press__impl pwr_button__button_full__on_press__impl
+    pwr_button__delay = 40;
+#undef is_awaiting_key_press__impl
+#undef on_press__impl
+}
+static void pwr_button__button_full__on_release__impl() {
+#define is_awaiting_key_press__impl pwr_button__button_full__is_awaiting_key_press__impl
+#define on_press__impl pwr_button__button_full__on_press__impl
+#define on_release__impl pwr_button__button_full__on_release__impl
+
+    if (pwr_button__delay) {
+        pwr_button.on_press();
+    }
+
+    pwr_button.on_release();
+#undef is_awaiting_key_press__impl
+#undef on_press__impl
+#undef on_release__impl
+}
+#define is_awaiting_key_press__impl pwr_button__button_full__is_awaiting_key_press__impl
+#define on_press__impl pwr_button__button_full__on_press__impl
+#define on_release__impl pwr_button__button_full__on_release__impl
+
+pwr_button__button_full_t const pwr_button__button_full = {.is_awaiting_key_press = &is_awaiting_key_press__impl
+                                                           ,
+                                                           .on_press = &on_press__impl
+                                                                   ,
+                                                           .on_release = &on_release__impl
+                                                          };
+
+
+#undef is_awaiting_key_press__impl
+#undef on_press__impl
+#undef on_release__impl
+#define is_awaiting_key_press__impl pwr_button__button_full__is_awaiting_key_press__impl
+#define on_press__impl pwr_button__button_full__on_press__impl
+#define on_release__impl pwr_button__button_full__on_release__impl
+
+
+;
+
+#define is_awaiting_key_press__impl pwr_button__button_full__is_awaiting_key_press__impl
+#define on_press__impl pwr_button__button_full__on_press__impl
+#define on_release__impl pwr_button__button_full__on_release__impl
+
+
+
+
+
+
+#undef is_awaiting_key_press__impl
+#undef on_press__impl
+#undef on_release__impl
+;
+
+
+
+
+static AKAT_FORCE_INLINE void pwr_button__button_full__runnable() {
+    akat_x_button_action_t const rc = akat_x_button_handle_pin_state(&pwr_button__button_full__state, pwr_button__button_full__input.is_set());
+
+    if (rc == AKAT_X_BUTTON_ACTION_KEYPRESS) {
+        pwr_button__button_full.on_press();
+    } else if (rc == AKAT_X_BUTTON_ACTION_KEYRELEASE) {
+        pwr_button__button_full.on_release();
+    }
+}
+
+;
+
+
+
+
+
+
+
+static AKAT_FORCE_INLINE void pwr_button__ticker() {
+    if (!pwr_button__button_full.is_awaiting_key_press()) {
+        if (pwr_button__delay) {
+            pwr_button__delay--;
+
+            if (pwr_button__delay == 0) {
+                pwr_button.on_long_press();
+            }
+        }
+    }
+}
+
+;
+
+
+
+
+;
+
+// Activity indication
+
+static u8 activity_led__counter = 0;
+static AKAT_FORCE_INLINE void activity_led() {
+#define counter activity_led__counter
+    ;
+    board_led.set(counter % 2);
+
+    if (power_should_be_on) {
+        hdd_led.set(counter % 2);
+        pwr_led.set(1);
+    } else {
+        hdd_led.set(0);
+        pwr_led.set(counter < 10);
+    }
+
+    counter += 1;
+
+    if (counter >= 30) {
+        counter = 0;
+    }
+
+#undef counter
+}
+
+;
+
+
+
+
+
+// Watchdog
+#include <avr/wdt.h>
+
+static AKAT_FORCE_INLINE void watchdog_init() {
+    wdt_enable(WDTO_8S);
+}
+
+;
+
+
+
+
+
+static AKAT_FORCE_INLINE void watchdog_reset() {
+    wdt_reset();
+}
+
+;
+
+
+
+
+;
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -5171,13 +5462,13 @@ ISR(USART_RX_vect) {
 // USART0(USB): This thread continuously writes current status into USART0
 
 // NOTE: Just replace state_type to u16 if we ran out of state space..
-static u8 usart0_writer__akat_coroutine_state = 0;
+register u8 usart0_writer__akat_coroutine_state asm ("r17");
 static u8 usart0_writer__crc = 0;
-static u8 usart0_writer__byte_to_send = 0;
-static u8 usart0_writer__u8_to_format_and_send = 0;
+register u8 usart0_writer__byte_to_send asm ("r16");
+register u8 usart0_writer__u8_to_format_and_send asm ("r18");
 static u16 usart0_writer__u16_to_format_and_send = 0;
 static u32 usart0_writer__u32_to_format_and_send = 0;
-static u8 usart0_writer__send_byte__akat_coroutine_state = 0;
+register u8 usart0_writer__send_byte__akat_coroutine_state asm ("r4");
 static u8 usart0_writer__send_byte() {
 #define akat_coroutine_state usart0_writer__send_byte__akat_coroutine_state
 #define byte_to_send usart0_writer__byte_to_send
@@ -6233,7 +6524,7 @@ static u8 usart0_reader__command_arg = 0;
 static u8 usart0_reader__read_command__akat_coroutine_state = 0;
 static u8 usart0_reader__read_command__dequeued_byte = 0;
 static u8 usart0_reader__read_command__command_arg_copy = 0;
-static u8 usart0_reader__read_command__dequeue_byte__akat_coroutine_state = 0;
+register u8 usart0_reader__read_command__dequeue_byte__akat_coroutine_state asm ("r3");
 static u8 usart0_reader__read_command__dequeue_byte() {
 #define akat_coroutine_state usart0_reader__read_command__dequeue_byte__akat_coroutine_state
 #define command_arg usart0_reader__command_arg
@@ -6618,6 +6909,7 @@ static AKAT_FORCE_INLINE void akat_on_every_decisecond() {
     ds18b20_ticker();
     ds18b20_onboard__ticker();
     ds18b20_ext__ticker();
+    pwr_button__ticker();
     activity_led();
 }
 
@@ -6656,7 +6948,7 @@ static void ds18b20_ticker() {
 
 
 
-static u8 ds18b20_thread__akat_coroutine_state = 0;
+register u8 ds18b20_thread__akat_coroutine_state asm ("r5");
 static u8 ds18b20_thread__byte_to_send = 0;
 static u8 ds18b20_thread__command_to_send = 0;
 static u8 ds18b20_thread__receive_idx = 0;
@@ -7566,6 +7858,12 @@ akat_coroutine_l_end:
 
 AKAT_NO_RETURN void main() {
     asm volatile ("EOR r2, r2\nINC r2": "=r"(__akat_one__));
+    usart0_reader__read_command__dequeue_byte__akat_coroutine_state = 0;
+    usart0_writer__send_byte__akat_coroutine_state = 0;
+    ds18b20_thread__akat_coroutine_state = 0;
+    usart0_writer__byte_to_send = 0;
+    usart0_writer__akat_coroutine_state = 0;
+    usart0_writer__u8_to_format_and_send = 0;
     akat_every_decisecond_run_required = 0;
     D3_unused__init();
     D4_unused__init();
@@ -7580,14 +7878,14 @@ AKAT_NO_RETURN void main() {
     C1_unused__init();
     C7_unused__init();
     C6_unused__init();
-    blue_led__init();
-    hdd_led__init();
-    pwr_led__init();
-    ps_on__init();
-    pwr_button__init();
-    watchdog_init();
     ds18b20_onboard__init();
     ds18b20_ext__init();
+    board_led__init();
+    hdd_led__init();
+    pwr_led__init();
+    pwr_button__button_full__input__init();
+    pwr_button__button_full__init();
+    watchdog_init();
     usart0_init();
     timer1();
     //Init
@@ -7598,6 +7896,8 @@ AKAT_NO_RETURN void main() {
     while (1) {
         performance_runnable();
         akat_on_every_decisecond_runner();
+        ps_on_mainenance();
+        pwr_button__button_full__runnable();
         watchdog_reset();
         usart0_writer();
         usart0_reader();
